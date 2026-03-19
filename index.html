@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HS KINETIC | Digital Architecture & Elite Strategy</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,600&family=Montserrat:wght@100;300;400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+    
+    <style>
+        /* --------------------------------------------------
+        [1. GLOBAL DESIGN SYSTEM]
+        -------------------------------------------------- */
+        :root {
+            --bg-deep: #080504;
+            --bg-card: #120c0a;
+            --gold-leaf: #d4af37;
+            --gold-bright: #fccf3e;
+            --gold-glow-subtle: rgba(252, 207, 62, 0.08);
+            --gold-glow-hover: rgba(252, 207, 62, 0.35);
+            --text-main: #e0e0e0;
+            --text-dim: #777777;
+            --font-serif: 'Cormorant Garamond', serif;
+            --ease-cinematic: cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Montserrat', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        body {
+            background-color: var(--bg-deep);
+            color: var(--text-main);
+            overflow-x: hidden;
+            line-height: 1.8;
+        }
+
+        /* --------------------------------------------------
+        [2. DYNAMIC BACKGROUND & FX]
+        -------------------------------------------------- */
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.4;
+        }
+        
+        .glow-tracker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at var(--x, 50%) var(--y, 50%), var(--gold-glow-subtle) 0%, transparent 60%);
+            z-index: 1;
+            pointer-events: none;
+            transition: 0.15s ease-out;
+        }
+
+        /* --------------------------------------------------
+        [3. NAVIGATION & 360° BRANDING]
+        -------------------------------------------------- */
+        nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.8rem 8%;
+            background: rgba(8, 5, 4, 0.98);
+            backdrop-filter: blur(30px);
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 10000;
+            border-bottom: 1px solid rgba(212, 175, 55, 0.1);
+        }
+
+        .brand-wrap {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+            text-decoration: none;
+        }
+
+        .logo-3d {
+            font-family: var(--font-serif);
+            font-size: 2.4rem;
+            font-weight: 700;
+            color: var(--gold-bright);
+            animation: rotateY360 12s linear infinite;
+            transform-style: preserve-3d;
+            display: inline-block;
+            text-shadow: 0 0 20px var(--gold-glow-hover);
+        }
+
+        @keyframes rotateY360 {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
+        .brand-name {
+            font-family: var(--font-serif);
+            font-size: 1.8rem;
+            color: #fff;
+            letter-spacing: 6px;
+            text-transform: uppercase;
+            font-weight: 300;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+        }
+
+        .nav-links li {
+            margin-left: 50px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #fff;
+            font-size: 0.75rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            transition: 0.4s var(--ease-cinematic);
+            font-weight: 300;
+        }
+
+        .nav-links a:hover {
+            color: var(--gold-bright);
+            text-shadow: 0 0 10px var(--gold-bright);
+        }
+
+        /* --------------------------------------------------
+        [4. HERO SECTION - CODING PRESTIGE]
+        -------------------------------------------------- */
+        .hero {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(rgba(8, 5, 4, 0.85), rgba(8, 5, 4, 0.98)), 
+                        url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            position: relative;
+            z-index: 10;
+            padding: 0 5%;
+        }
+
+        .hero-tag {
+            font-size: 0.8rem;
+            letter-spacing: 18px;
+            color: var(--gold-leaf);
+            text-transform: uppercase;
+            margin-bottom: 30px;
+            opacity: 0.8;
+        }
+
+        .hero h1 {
+            font-family: var(--font-serif);
+            font-size: clamp(4rem, 14vw, 9rem);
+            font-style: italic;
+            color: var(--gold-bright);
+            line-height: 0.85;
+            margin-bottom: 40px;
+            text-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        }
+
+        /* --------------------------------------------------
+        [5. CORE SECTIONS & GLOW SLOTS]
+        -------------------------------------------------- */
+        section {
+            padding: 160px 10%;
+            position: relative;
+            z-index: 10;
+        }
+
+        .section-num {
+            font-size: 5rem;
+            font-weight: 700;
+            color: rgba(212, 175, 55, 0.05);
+            position: absolute;
+            top: 120px;
+            left: 8%;
+        }
+
+        .label {
+            color: var(--gold-leaf);
+            font-size: 0.75rem;
+            letter-spacing: 10px;
+            text-transform: uppercase;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .title {
+            font-family: var(--font-serif);
+            font-size: 4.5rem;
+            color: #fff;
+            margin-bottom: 100px;
+            font-weight: 400;
+        }
+
+        .glow-slot {
+            background: var(--bg-card);
+            border: 1px solid rgba(212, 175, 55, 0.08);
+            padding: 60px;
+            position: relative;
+            overflow: hidden;
+            transition: 0.7s var(--ease-cinematic);
+            height: 100%;
+        }
+
+        .glow-slot::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, var(--gold-glow-hover), transparent 75%);
+            opacity: 0;
+            transition: 0.8s;
+            z-index: -1;
+        }
+
+        .glow-slot:hover::before { opacity: 1; }
+        .glow-slot:hover {
+            border-color: var(--gold-bright);
+            transform: translateY(-20px);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.6);
+        }
+
+        /* Asymmetric Founders */
+        .founder-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 1fr;
+            gap: 100px;
+            align-items: center;
+        }
+
+        .founder-stack { display: flex; flex-direction: column; gap: 50px; }
+        .f-box h3 { font-family: var(--font-serif); font-size: 2.8rem; color: var(--gold-bright); margin-bottom: 10px; }
+        .f-box span { font-size: 0.75rem; color: #777; text-transform: uppercase; letter-spacing: 5px; font-weight: 600; }
+
+        /* Expertise Cards */
+        .expertise-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+        .expertise-card i { font-size: 3rem; color: var(--gold-bright); margin-bottom: 30px; }
+        .expertise-card h3 { font-family: var(--font-serif); font-size: 2.2rem; margin-bottom: 20px; }
+        .expertise-card p { color: #888; font-weight: 300; line-height: 1.8; }
+
+        /* --------------------------------------------------
+        [6. THE WORK - CINEMATIC ARCHIVE]
+        -------------------------------------------------- */
+        .work-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 25px;
+        }
+
+        .work-item {
+            height: 400px;
+            position: relative;
+            overflow: hidden;
+            border: 1px solid rgba(255,255,255,0.04);
+            text-decoration: none;
+            display: block;
+        }
+
+        .work-img {
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(1) brightness(0.6);
+            transition: 1.5s var(--ease-cinematic);
+        }
+
+        .work-item:hover .work-img {
+            filter: grayscale(0) brightness(1);
+            transform: scale(1.15);
+        }
+
+        .work-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            padding: 50px;
+            background: linear-gradient(to top, #000, transparent 90%);
+            transform: translateY(20px);
+            opacity: 0;
+            transition: 0.7s;
+        }
+
+        .work-item:hover .work-overlay {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .work-overlay h4 {
+            font-family: var(--font-serif);
+            font-size: 2.2rem;
+            color: var(--gold-bright);
+        }
+
+        /* --------------------------------------------------
+        [7. CONTACT AREA & LEAD CAPTURE]
+        -------------------------------------------------- */
+        .contact-area {
+            text-align: center;
+            background: #070403;
+            padding: 200px 10%;
+            border-top: 1px solid rgba(212, 175, 55, 0.05);
+        }
+
+        .wa-btn {
+            display: inline-block;
+            padding: 28px 80px;
+            background: var(--gold-bright);
+            color: #000;
+            font-weight: 700;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 6px;
+            border-radius: 2px;
+            transition: 0.6s var(--ease-cinematic);
+            font-size: 1rem;
+        }
+
+        .wa-btn:hover {
+            background: #fff;
+            transform: translateY(-12px);
+            box-shadow: 0 20px 60px var(--gold-glow-hover);
+        }
+
+        .social-links { margin-top: 80px; display: flex; justify-content: center; gap: 50px; }
+        .social-links a { color: var(--gold-leaf); text-decoration: none; letter-spacing: 4px; font-weight: 300; transition: 0.3s; }
+        .social-links a:hover { color: #fff; transform: translateY(-5px); }
+
+        footer {
+            padding: 120px 10%;
+            border-top: 1px solid rgba(212, 175, 55, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .footer-logo { font-family: var(--font-serif); font-size: 2.2rem; color: var(--gold-bright); }
+
+        /* --------------------------------------------------
+        [8. RESPONSIVE ENGINE]
+        -------------------------------------------------- */
+        @media (max-width: 1024px) {
+            .founder-grid { grid-template-columns: 1fr; gap: 60px; }
+            .hero h1 { font-size: 5.5rem; }
+            footer { flex-direction: column; gap: 50px; text-align: center; }
+            .nav-links { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glow-tracker" id="glow"></div>
+    <canvas id="particle-canvas"></canvas>
+
+    <nav>
+        <a href="#" class="brand-wrap">
+            <div class="logo-3d">HS</div>
+            <div class="brand-name">Kinetic</div>
+        </a>
+        <ul class="nav-links">
+            <li><a href="#about">The Agency</a></li>
+            <li><a href="#expertise">Expertise</a></li>
+            <li><a href="#work">Our Work</a></li>
+            <li><a href="#contact">Connect</a></li>
+        </ul>
+    </nav>
+
+    <section class="hero" id="home">
+        <div class="hero-tag" data-aos="fade-down">Architecting Digital Status</div>
+        <h1 data-aos="zoom-in" data-aos-duration="1500">HS KINETIC</h1>
+        <p data-aos="fade-up" data-aos-delay="400" style="letter-spacing: 18px; font-weight: 200; font-size: 0.9rem; color: var(--gold-leaf);">BEYOND DIGITAL ARCHITECTURE</p>
+    </section>
+
+    <section id="about">
+        <div class="section-num">01</div>
+        <span class="label" data-aos="fade-right">Foundation</span>
+        <h2 class="title" data-aos="fade-up">Agency Minds</h2>
+        <div class="founder-grid">
+            <div class="about-text" data-aos="fade-right">
+                <p>HS Kinetic is an elite design-centric laboratory where technical software engineering meets cinematic aesthetics. We don't build websites; we build high-performance digital ecosystems for the global tier.</p>
+                <p>Our philosophy is centered on kineticism—the belief that your digital identity must be as dynamic and evolving as the market it inhabits.</p>
+            </div>
+            <div class="founder-stack">
+                <div class="glow-slot f-box" data-aos="fade-up">
+                    <h3>Haris Khan</h3>
+                    <span>Founder & Lead Architect</span>
+                    <p style="margin-top:25px; font-size: 0.9rem; color: #888;">Architecting robust Full-Stack systems and high-conversion luxury design frameworks.</p>
+                </div>
+                <div class="glow-slot f-box" data-aos="fade-up" data-aos-delay="200">
+                    <h3>Subhasmita Behera</h3>
+                    <span>Co-Founder & Director</span>
+                    <p style="margin-top:25px; font-size: 0.9rem; color: #888;">Leading strategic operations and maintaining surgical precision in global project delivery.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="expertise" style="background: #0c0806;">
+        <div class="section-num">02</div>
+        <span class="label" data-aos="fade-right">Capabilities</span>
+        <h2 class="title" data-aos="fade-up">Our Expertise</h2>
+        <div class="expertise-grid">
+            <div class="glow-slot expertise-card" data-aos="fade-up">
+                <i class="fas fa-laptop-code"></i>
+                <h3>Web Architecture</h3>
+                <p>Scaling robust, high-performance backends paired with pixel-perfect, interactive cinematic frontends.</p>
+            </div>
+            <div class="glow-slot expertise-card" data-aos="fade-up" data-aos-delay="100">
+                <i class="fas fa-brain"></i>
+                <h3>AI Engineering</h3>
+                <p>Integrating neural networks and smart automation into business cores to drive intelligent scaling.</p>
+            </div>
+            <div class="glow-slot expertise-card" data-aos="fade-up" data-aos-delay="200">
+                <i class="fas fa-gem"></i>
+                <h3>Elite Branding</h3>
+                <p>Crafting visual design systems designed exclusively for the top tier of your target industry.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="work">
+        <div class="section-num">03</div>
+        <span class="label" data-aos="fade-right">The Archive</span>
+        <h2 class="title" data-aos="fade-up">Selected Works</h2>
+        <div class="work-grid">
+            <a href="https://hariss12338.github.io/vintage--coffee--cafe/" class="work-item" data-aos="fade-up" target="_blank">
+                <div class="work-img" style="background-image: url('https://images.unsplash.com/photo-1501339847302-ac426a4a7cbb?auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="work-overlay"><h4>Vintage Coffee</h4><p>Cafe Ecosystem</p></div>
+            </a>
+            <a href="https://hariss12338.github.io/NOIR-SULTAN/" class="work-item" data-aos="fade-up" data-aos-delay="100" target="_blank">
+                <div class="work-img" style="background-image: url('https://images.unsplash.com/photo-1559056199-641a0ac8b55e?auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="work-overlay"><h4>Noir Sultan</h4><p>AI Coffee Bean Concept</p></div>
+            </a>
+            <a href="https://hariss12338.github.io/NEARBY-FITNESS/" class="work-item" data-aos="fade-up" data-aos-delay="200" target="_blank">
+                <div class="work-img" style="background-image: url('https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="work-overlay"><h4>Nearby Fitness</h4><p>Geo-Health Tech</p></div>
+            </a>
+            <a href="https://hariss12338.github.io/SenCe-Smart-Classes/" class="work-item" data-aos="fade-up" data-aos-delay="300" target="_blank">
+                <div class="work-img" style="background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="work-overlay"><h4>SenCe Smart</h4><p>Educational Evolution</p></div>
+            </a>
+            <a href="https://hariss12338.github.io/HK-DENTAL/" class="work-item" data-aos="fade-up" data-aos-delay="400" target="_blank">
+                <div class="work-img" style="background-image: url('https://images.unsplash.com/photo-1629909613654-28e377c37b09?auto=format&fit=crop&w=800&q=80');"></div>
+                <div class="work-overlay"><h4>HK Dental</h4><p>Medical Precision</p></div>
+            </a>
+        </div>
+    </section>
+
+    <section id="contact" class="contact-area">
+        <h2 data-aos="fade-up">Envision Your Future</h2>
+        <a href="https://wa.me/918879390285?text=Hello%20HS%20KINETIC,%20I'm%20ready%20to%20elevate%20my%20brand." class="wa-btn" data-aos="zoom-in">WhatsApp Inquiry</a>
+        
+        <div class="social-links" data-aos="fade-up" data-aos-delay="300">
+            <a href="https://github.com/github-copilot/pro/signup" target="_blank">GITHUB ARCHIVE</a>
+            <a href="mailto:hskinetic01@gmail.com">GMAIL INQUIRY</a>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-logo">HS KINETIC</div>
+        <div style="font-size: 0.75rem; color: #444; letter-spacing: 4px; text-transform: uppercase;">© 2026 THE NEW STANDARD OF DIGITAL PRESTIGE</div>
+    </footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        window.onload = () => {
+            AOS.init({ duration: 1200, once: true });
+        };
+
+        const glow = document.getElementById('glow');
+        window.addEventListener('mousemove', (e) => {
+            glow.style.setProperty('--x', (e.clientX / window.innerWidth) * 100 + '%');
+            glow.style.setProperty('--y', (e.clientY / window.innerHeight) * 100 + '%');
+        });
+
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+        let particlesArray = [];
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = resize; resize();
+        
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = Math.random() * 0.5 - 0.25;
+                this.speedY = Math.random() * 0.5 - 0.25;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.x < 0) this.x = canvas.width;
+                if (this.y > canvas.height) this.y = 0;
+                if (this.y < 0) this.y = canvas.height;
+            }
+            draw() {
+                ctx.fillStyle = 'rgba(212, 175, 55, 0.4)';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+        function init() {
+            for (let i = 0; i < 100; i++) { particlesArray.push(new Particle()); }
+        }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particlesArray.forEach(p => { p.update(); p.draw(); });
+            requestAnimationFrame(animate);
+        }
+        init(); animate();
+    </script>
+</body>
+</html>
